@@ -11,7 +11,7 @@ struct BiList
 template <class T>
 BiList<T>* add(BiList<T>* ps, const T& d)
 {
-  BiList<T>* l = new BiList<T>{d, ps -> next, ps};
+  BiList<T>* l = new BiList<T>{d, ps -> next, ps}; 
   if (ps -> next)
   {
     ps -> next -> prev = l;
@@ -23,7 +23,7 @@ BiList<T>* add(BiList<T>* ps, const T& d)
 template <class T>
 BiList<T>* insert(BiList<T>* node, const T& d)
 {
-  BiList<T>* l = new BiList<T>{d, node -> next, node};
+  BiList<T>* l = new BiList<T>{d, node -> next, node}; 
   if (node -> next)
   {
     node -> next -> prev = l;
@@ -35,12 +35,13 @@ BiList<T>* insert(BiList<T>* node, const T& d)
 template <class T>
 BiList<T>* cut (BiList<T>* ps) noexcept
 {
-  ps -> next = ps -> next -> next;
-  if (ps -> next -> next)
+  BiList<T>* curr = ps -> next;
+  ps -> next = curr -> next;
+  if (curr -> next)
   {
-    ps -> next -> next -> prev = ps;
+    curr -> next -> prev = ps;
   }
-  delete ps -> next;
+  delete curr; 
   return ps;
 }
 
@@ -66,9 +67,38 @@ F traverse(F f, BiList<T>* ps, BiList<T>* e)
   BiList<T>* curr = ps -> next;
   while (curr != nullptr && curr != e)
   {
-    f(curr->val);
-    curr = curr->next;
+    f(curr -> val);
+    curr = curr -> next;
   }
-  f(curr -> val);
+  return f;
 }
 
+template <class T>
+BiList<T>* convert(T* arr, size_t s)
+{
+  BiList<T>* ps = new BiList<T>{T(), nullptr, nullptr};
+  try
+  {
+    BiList<T>* curr = add(ps, arr[0]);
+  }
+  catch(...)
+  {
+    delete ps;
+    throw;
+  }
+  for (size_t i = 1; i < s; i++)
+  {
+    try
+    {
+      BiList<T>* curr = add(curr, arr[i]);
+    }
+    catch(...)
+    {
+      clear(ps);
+      delete ps;
+      throw;
+    }
+  }
+  delete[] arr;
+  return ps;
+}
